@@ -1,7 +1,8 @@
 import { Image } from "expo-image";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
-import { PokemonDetails } from "../core/entities/pokemon.entities";
+import { PokemonDetails } from "../core/types/pokemon.entities";
 
+const { width: screenWidth, height } = Dimensions.get("window");
 interface PokemonDetailsCardProps {
   pokemon: PokemonDetails | undefined;
 }
@@ -9,18 +10,18 @@ interface PokemonDetailsCardProps {
 const PokemonDetailsCard = ({ pokemon }: PokemonDetailsCardProps) => {
   return (
     <View style={styles.container}>
+      
       <Image
         style={styles.image}
         source={pokemon?.sprites?.other?.dream_world?.front_default}
-        placeholder={pokemon?.sprites?.other?.dream_world?.front_default}
-        contentFit="cover"
+        contentFit="contain"
         transition={1000}
       />
+       
       <View style={styles.infoContainer}>
         <Text style={styles.font}>Nombre: {pokemon?.name}</Text>
         <Text style={styles.font}>
-          Tipo:{" "}
-          {pokemon?.types?.map((type, index) => type.type.name).join(", ")}
+          Tipo: {pokemon?.types?.map((type, index) => type.type.name).join(", ")}
         </Text>
         <Text style={styles.font}>Peso: {pokemon?.weight} Kg</Text>
       </View>
@@ -31,10 +32,6 @@ const PokemonDetailsCard = ({ pokemon }: PokemonDetailsCardProps) => {
 export default PokemonDetailsCard;
 
 
-const width = Dimensions.get("window").width;
-const aspectRatio = 1;
-const imageHeight = width / aspectRatio;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -43,21 +40,24 @@ const styles = StyleSheet.create({
     flexDirection: "column",
   },
   image: {
-    width: width,
-    height: imageHeight,
+    flex: 1,
+    width: screenWidth,
+    height: height / 2,
     backgroundColor: "#0553",
-    borderRadius: 8,
-    objectFit: "cover",
-    marginBottom: 10,
+    borderRadius: 4,
+    overflow: 'hidden'
   },
   infoContainer: {
-     width: '100%',
-    flexDirection: "column",
-    paddingVertical: 6,
+    position: 'absolute',
+    bottom: 30,
+    left: 10,
+    right: 10,
+    paddingVertical: 10,
     paddingHorizontal: 8,
     borderRadius: 8,
     borderColor: "#ccc",
-    borderWidth: 1
+    borderWidth: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
   },
   font: {
     fontSize: 16,

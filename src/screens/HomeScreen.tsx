@@ -1,11 +1,11 @@
 import { RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useEffect, useReducer, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { RootStackParamList } from "../Navigation";
 import PokemonCard from "../components/PokemonCard";
-import { Pokemon, PokemonDetailsHome } from "../core/entities/pokemon.entities";
 import usePokemonData from "../hooks/usePokemonData";
+import Spinner from "react-native-loading-spinner-overlay";
+import { Image } from "expo-image";
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -22,29 +22,22 @@ const HomeScreen = ({ navigation, route }: HomeScreenProps) => {
 
   if (state.isLoading) {
     return (
-      <View
-        style={{
-          flex: 1,
-          paddingHorizontal: 10,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Text>Cargando...</Text>
+      <View style={styles.containerState}>
+        <Spinner
+          color="white"
+          animation="fade"
+          visible
+          textContent={"Cargando..."}
+          textStyle={{ color: "white" }}
+          size="large"
+        />
       </View>
     );
   }
 
   if (state.isError) {
     return (
-      <View
-        style={{
-          flex: 1,
-          paddingHorizontal: 10,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+      <View style={styles.containerState}>
         <Text>Error al cargar los datos</Text>
       </View>
     );
@@ -52,7 +45,21 @@ const HomeScreen = ({ navigation, route }: HomeScreenProps) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Lista de Pokemones</Text>
+      <View
+        style={{
+          width: "100%",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Text style={styles.title}>Lista de Pokemones</Text>
+        <Image
+          source={require("../../assets/pokeapi_256.png")}
+          style={{ width: 100, height: 40 }}
+          contentFit="contain"
+        />
+      </View>
       <FlatList
         data={state.data}
         keyExtractor={({ id }) => id}
@@ -82,10 +89,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     backgroundColor: "#fff",
   },
+  containerState: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 
   title: {
-    fontSize: 20,
+    fontSize: 22,
     marginVertical: 10,
+    fontWeight: "bold",
     textAlign: "center",
   },
 });

@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Image } from "expo-image";
-import { PokemonDetailsHome } from "../core/entities/pokemon.entities";
+import { PokemonDetailsHome } from "../core/types/pokemon.entities";
 
 interface ItemProps  {
   item: PokemonDetailsHome;

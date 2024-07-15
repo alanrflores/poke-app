@@ -1,11 +1,11 @@
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { RootStackParamList } from "../Navigation";
 import { RouteProp } from "@react-navigation/native";
-import { useEffect, useState } from "react";
-import { PokemonDetails } from "../core/entities/pokemon.entities";
+import { useEffect } from "react";
 import PokemonDetailsCard from "../components/PokemonDetailsCard";
 import usePokemonData from "../hooks/usePokemonData";
+import Spinner from "react-native-loading-spinner-overlay";
 
 type DetailsScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -29,29 +29,22 @@ const DetailScreen = ({ navigation, route }: DetailScreenProps) => {
 
   if (state.isLoading) {
     return (
-      <View
-        style={{
-          flex: 1,
-          paddingHorizontal: 10,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Text>Cargando...</Text>
+      <View style={styles.containerState}>
+        <Spinner
+          color="white"
+          animation="fade"
+          visible
+          textContent={"Cargando..."}
+          textStyle={{ color: "white" }}
+          size="large"
+        />
       </View>
     );
   }
 
   if (state.isError) {
     return (
-      <View
-        style={{
-          flex: 1,
-          paddingHorizontal: 10,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+      <View style={styles.containerState}>
         <Text>Error al cargar los datos</Text>
       </View>
     );
@@ -72,5 +65,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+  },
+  containerState: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
