@@ -1,13 +1,12 @@
-import { RouteProp, useNavigation } from "@react-navigation/native";
+import { RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useEffect, useState } from "react";
-import { FlatList, Pressable, Text, View } from "react-native";
+import { useEffect, useReducer, useState } from "react";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import { RootStackParamList } from "../Navigation";
+import PokemonCard from "../components/PokemonCard";
+import { Pokemon, PokemonDetailsHome } from "../core/entities/pokemon.entities";
+import usePokemonData from "../hooks/usePokemonData";
 
-type Pokemon = {
-  name: string;
-  url: string;
-};
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   "Home"
@@ -19,89 +18,74 @@ interface HomeScreenProps {
   route: HomeScreenRouteProp;
 }
 const HomeScreen = ({ navigation, route }: HomeScreenProps) => {
-  const [pokemons, setPokemons] = useState<Pokemon[]>([]);
-  const [loading, setLoading] = useState(false);
+  const { state } = usePokemonData();
 
-  const getPokemons = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(
-        "https://pokeapi.co/api/v2/pokemon?offset=50&limit=50"
-      );
-      const data = await response.json();
-      setPokemons(data.results);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    getPokemons();
-  }, []);
-  
-  return (
-    <View
-      style={{
-        flex: 1,
-        paddingHorizontal: 10,
-      }}
-    >
-      <Text
+  if (state.isLoading) {
+    return (
+      <View
         style={{
-          fontSize: 24,
-          fontWeight: "bold",
-          marginVertical: 10,
+          flex: 1,
+          paddingHorizontal: 10,
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
-        Lista de Pokemones
-      </Text>
-      {loading ? (
         <Text>Cargando...</Text>
-      ) : (
-        <FlatList
-          data={pokemons}
-          keyExtractor={({ url }) => url}
-          renderItem={({ item }) => {
-            const { name, url } = item;
-            return (
-              <View style={{
-                borderBottomWidth: 1,
-                borderBottomColor: "#ccc",
-                paddingVertical: 10,
+      </View>
+    );
+  }
 
-              }}>
-                <Pressable
-                style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        paddingVertical: 6,
+  if (state.isError) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          paddingHorizontal: 10,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Text>Error al cargar los datos</Text>
+      </View>
+    );
+  }
 
-                }}
-                  onPress={() =>
-                    navigation.navigate("Details", { name: name, url: url })
-                  }
-                >
-                  <Text
-                    style={{
-                      fontSize: 18,
-                      fontWeight: 400,
-                      marginVertical: 6,
-                      textTransform: "capitalize",
-                    }}
-                  >
-                    {name}
-                  </Text>
-                </Pressable>
-              </View>
-            );
-          }}
-        />
-      )}
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Lista de Pokemones</Text>
+      <FlatList
+        data={state.data}
+        keyExtractor={({ id }) => id}
+        renderItem={({ item }) => {
+          return (
+            <PokemonCard
+              item={item}
+              onPress={() =>
+                navigation.navigate("Details", {
+                  name: item.name,
+                  id: item.id,
+                })
+              }
+            />
+          );
+        }}
+      />
     </View>
   );
 };
 
 export default HomeScreen;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: 10,
+    backgroundColor: "#fff",
+  },
+
+  title: {
+    fontSize: 20,
+    marginVertical: 10,
+    textAlign: "center",
+  },
+});

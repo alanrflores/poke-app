@@ -6,7 +6,7 @@ import DetailScreen from './screens/DetailScreen';
 
 export type RootStackParamList = {
   Home: undefined;
-  Details: { name: string; url: string };
+  Details: { name: string; id: string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
